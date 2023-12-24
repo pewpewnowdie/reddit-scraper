@@ -58,4 +58,5 @@ def main():
     posts = get_posts(subreddits)
     print(len(posts))
 
-main()
+if __name__ == "__main__":
+    main()
