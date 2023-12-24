@@ -14,6 +14,9 @@ def get_request(subreddit, param = '', dura = 'week'):
 def parse(subreddit, after = '', dura = 'week'):
     posts = []
     response = get_request(subreddit, after, dura)
+    if response.status_code != 200:
+        print('Error')
+        return posts
     response_json = response.json()
     children = response_json['data']['children']
     for i in range (len(children)):
@@ -51,7 +54,7 @@ def get_posts(subreddits, after = '', dura = 'week'):
     return posts
 
 def main():
-    subreddits = ['programming']
+    subreddits = ['programming', 'India']
     posts = get_posts(subreddits)
     print(len(posts))
 
