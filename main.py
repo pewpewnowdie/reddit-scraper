@@ -64,8 +64,9 @@ def get_posts(subreddits, next = '', time = 'week'):
         print('argument should be a string')
     return posts
 
-subreddits = ['IndianMeyMeys', 'IndianDankMemes']
-posts = get_posts(subreddits)
+def main():
+    subreddits = ['IndianMeyMeys', 'IndianDankMemes']
+    posts = get_posts(subreddits)
 
-for post in posts:
-    print(post['title'])
+    for post in posts:
+        print(post['title'])
