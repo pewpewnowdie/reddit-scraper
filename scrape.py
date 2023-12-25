@@ -58,17 +58,20 @@ def parse(subreddit, after = '', dura = 'week'):
 
 
 
-def get_posts(subreddits, dura = 'week'):
+def get_posts(subreddits, dura = 'day'):
     posts = []
-    for subreddit in subreddits:
-        temp = parse(subreddit, dura = dura)
-        posts = posts + temp
+    try:
+        for subreddit in subreddits:
+            temp = parse(subreddit, dura = dura)
+            posts = posts + temp
+    except KeyboardInterrupt:
+        print('Exiting...')
     return posts
 
 
 
 def main():
-    subreddits = ['India']
+    subreddits = ['IndianDankMemes']
     posts = get_posts(subreddits)
     print(len(posts))
 
