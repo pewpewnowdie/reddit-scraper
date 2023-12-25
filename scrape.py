@@ -40,11 +40,19 @@ def parse(subreddit, after = '', dura = 'week'):
             post['subreddit'] = data['subreddit_name_prefixed']
             post['source'] = 'https://www.rxddit.com'+data['permalink']
             if(media):
+                post['format'] = 'video'
                 post['dash'] = media['reddit_video']['dash_url']
                 post['video_url'] = media['reddit_video']['fallback_url']
                 post['audio_url'] = post['video_url'][0:post['video_url'].rfind('DASH_') + 5] + 'AUDIO_64.mp4'
+                post['image_url'] = None
             else:
-                continue
+                if data['url_overridden_by_dest'][0:17] != 'https://i.redd.it':
+                    continue
+                post['format'] = 'image'
+                post['dash'] = None
+                post['video_url'] = None
+                post['audio_url'] = None
+                post['image_url'] = data['url_overridden_by_dest']
         except:
             continue
         posts.append(post)
@@ -77,7 +85,8 @@ def main():
     posts = get_posts(subreddits)
     print(len(posts))
     for post in posts:
-        print(post['video_url'])
+        if post['format'] == 'video':
+            print(post['video_url'])
 
 
 
