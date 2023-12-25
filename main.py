@@ -1,6 +1,8 @@
 import requests
 import time
 
+
+
 def get_request(subreddit, param = '', dura = 'week'):
     url = f"https://www.reddit.com/r/{subreddit}/top.json?t={dura}{param}"
 
@@ -11,14 +13,20 @@ def get_request(subreddit, param = '', dura = 'week'):
     response = requests.get(url, headers=headers)
     return response
 
+
+
 def parse(subreddit, after = '', dura = 'week'):
     posts = []
+    time.sleep(1)
     response = get_request(subreddit, after, dura)
+
     if response.status_code != 200:
         print('Error')
         return posts
+    
     response_json = response.json()
     children = response_json['data']['children']
+
     for i in range (len(children)):
         post = {}
         data = children[i]['data']
@@ -38,25 +46,33 @@ def parse(subreddit, after = '', dura = 'week'):
         except:
             break
         posts.append(post)
+        print(post['id'], min(post['title'][0:25],post['title'][0:len(post['title'])]), '...')
+
     after = response_json['data']['after']
     if after:
         param = '&after='+response_json['data']['after']
         after_posts = parse(subreddit, param)
         posts = posts + after_posts
+
     return posts
 
-def get_posts(subreddits, after = '', dura = 'week'):
+
+
+def get_posts(subreddits, dura = 'week'):
     posts = []
     for subreddit in subreddits:
-        temp = parse(subreddit, after, dura)
-        time.sleep(1)
+        temp = parse(subreddit, dura = dura)
         posts = posts + temp
     return posts
 
+
+
 def main():
-    subreddits = ['programming', 'India']
+    subreddits = ['India']
     posts = get_posts(subreddits)
     print(len(posts))
+
+
 
 if __name__ == "__main__":
     main()
