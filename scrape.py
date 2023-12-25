@@ -39,7 +39,7 @@ def parse(subreddit, after = '', dura = 'week'):
             post['upvote_ratio'] = data['upvote_ratio']
             post['subreddit'] = data['subreddit_name_prefixed']
             post['source'] = 'https://www.rxddit.com'+data['permalink']
-            if(media):
+            if media:
                 post['dash'] = media['reddit_video']['dash_url']
                 post['video_url'] = media['reddit_video']['fallback_url']
                 post['audio_url'] = post['video_url'][0:post['video_url'].rfind('DASH_') + 5] + 'AUDIO_64.mp4'
