@@ -41,12 +41,14 @@ def parse(subreddit, after = '', dura = 'week'):
             post['source'] = 'https://www.rxddit.com'+data['permalink']
             if(media):
                 post['dash'] = media['reddit_video']['dash_url']
+                post['video_url'] = media['reddit_video']['fallback_url']
+                post['audio_url'] = post['video_url'][0:post['video_url'].rfind('DASH_') + 5] + 'AUDIO_64.mp4'
             else:
-                post['dash'] = media
+                continue
         except:
-            break
+            continue
         posts.append(post)
-        print(post['id'], min(post['title'][0:25],post['title'][0:len(post['title'])]), '...')
+        print(post['id'], post['source'])
 
     after = response_json['data']['after']
     if after:
@@ -74,6 +76,8 @@ def main():
     subreddits = ['IndianDankMemes']
     posts = get_posts(subreddits)
     print(len(posts))
+    for post in posts:
+        print(post['video_url'])
 
 
 
