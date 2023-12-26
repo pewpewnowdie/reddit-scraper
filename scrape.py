@@ -95,8 +95,7 @@ def main():
     posts = get_posts(subreddits)
     print(len(posts))
     for post in posts:
-        if post.format == 'video':
-            print(post.video_url)
+        print(vars(post))
 
 if __name__ == "__main__":
     main()
