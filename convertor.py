@@ -1,5 +1,3 @@
-
-# Import everything needed to edit video clips 
 from moviepy.editor import *
 import requests
 import tempfile
@@ -28,4 +26,3 @@ clip = video_clip.set_audio(audio_clip)
 
 clip.write_videofile('final.mp4', audio = True)
 clip.preview()
-    
