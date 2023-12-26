@@ -17,5 +17,6 @@ audioclip = AudioFileClip('audio.mp4')
   
 # adding audio to the video clip 
 videoclip = clip.set_audio(audioclip) 
-  
+
+videoclip.write_videofile('final.mp4', audio = True)
 videoclip.preview()
