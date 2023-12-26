@@ -80,7 +80,7 @@ def parse(subreddit, after = '', dura = 'week'):
 
     return posts
 
-def get_posts(subreddits, dura = 'day'):
+def get_posts(subreddits, dura = 'week'):
     posts = []
     try:
         for subreddit in subreddits:
@@ -92,7 +92,7 @@ def get_posts(subreddits, dura = 'day'):
 
 def main():
     subreddits = ['IndianDankMemes']
-    posts = get_posts(subreddits)
+    posts = get_posts(subreddits, dura = 'day')
     print(len(posts))
     for post in posts:
         print(vars(post))
