@@ -42,30 +42,20 @@ def parse(subreddit, after = '', dura = 'week'):
     children = response_json['data']['children']
 
     for i in range (len(children)):
-        post = Post(None, None, None, None, None, None, None, None, None, None, None, None)
+        
         data = children[i]['data']
         try:
-            post.id = data['name']
-            post.title = data['title'] 
+            post = Post(data['name'], data['title'], data['ups'], data['num_comments'], data['upvote_ratio'], data['subreddit_name_prefixed'], 'https://www.rxddit.com'+data['permalink'],None, None, None, None, None) 
             media = data['media']
-            post.upvotes = data['ups']
-            post.comments = data['num_comments']
-            post.upvote_ratio = data['upvote_ratio']
-            post.subreddit = data['subreddit_name_prefixed']
-            post.source = 'https://www.rxddit.com'+data['permalink']
             if media:
                 post.format = 'video'
                 post.dash = media['reddit_video']['dash_url']
                 post.video_url = media['reddit_video']['fallback_url']
                 post.audio_url = post.video_url[0:post.video_url.rfind('DASH_') + 5] + 'AUDIO_64.mp4'
-                post.image_url = None
             else:
                 if data['url_overridden_by_dest'][0:17] != 'https://i.redd.it':
                     continue
                 post.format = 'image'
-                post.dash = None
-                post.video_url = None
-                post.audio_url = None
                 post.image_url = data['url_overridden_by_dest']
         except:
             continue
@@ -80,11 +70,11 @@ def parse(subreddit, after = '', dura = 'week'):
 
     return posts
 
-def get_posts(subreddits, dura = 'week'):
+def get_posts(subreddits, after = '', dura = 'week'):
     posts = []
     try:
         for subreddit in subreddits:
-            temp = parse(subreddit, dura = dura)
+            temp = parse(subreddit, after = after, dura = dura)
             posts = posts + temp
     except KeyboardInterrupt:
         print('Exiting...')
@@ -92,7 +82,7 @@ def get_posts(subreddits, dura = 'week'):
 
 def main():
     subreddits = ['IndianDankMemes']
-    posts = get_posts(subreddits, dura = 'day')
+    posts = get_posts(subreddits, after = '', dura = 'day')
     print(len(posts))
     for post in posts:
         print(vars(post))
