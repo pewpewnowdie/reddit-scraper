@@ -1,23 +1,35 @@
 import requests
 import time
+from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-class Post:
-    def __init__(self, id, title, upvotes, comments, upvote_ratio, subreddit, source, format, dash, video_url, audio_url, image_url):
-        self.id = id
-        self.title = title
-        self.upvotes = upvotes
-        self.comments = comments
-        self.upvote_ratio = upvote_ratio
-        self.subreddit = subreddit
-        self.source = source
-        self.format = format
-        self.dash = dash
-        self.video_url = video_url
-        self.audio_url = audio_url
-        self.image_url = image_url
+db = 'sqlite:///posts.db'
+engine = create_engine(db, echo=False)
 
-    def __dir__(self):
-        return ['id', 'title', 'upvotes', 'comments', 'upvote_ratio', 'subreddit', 'source', 'format', 'dash', 'video_url', 'audio_url', 'image_url']
+Session = sessionmaker(bind=engine)
+session = Session()
+
+Base = declarative_base()
+
+class Post(Base):
+    __tablename__ = 'posts'
+
+    id = Column(Integer, primary_key=True)
+    post_id = Column(String, unique=True)
+    title = Column(String)
+    upvotes = Column(Integer)
+    comments = Column(Integer)
+    upvote_ratio = Column(Float)
+    subreddit = Column(String)
+    source = Column(String)
+    format = Column(String)
+    dash = Column(String)
+    video_url = Column(String)
+    audio_url = Column(String)
+    image_url = Column(String)
+
+# Base.metadata.create_all(engine)
+
 
 def get_request(subreddit, param = '', dura = 'week'):
     url = f"https://www.reddit.com/r/{subreddit}/top.json?t={dura}{param}"
@@ -29,23 +41,24 @@ def get_request(subreddit, param = '', dura = 'week'):
     response = requests.get(url, headers=headers)
     return response
 
+
 def parse(subreddit, after = '', dura = 'week'):
-    posts = []
     time.sleep(1)
     response = get_request(subreddit, after, dura)
 
     if response.status_code != 200:
         print('Error')
-        return posts
+        return
     
     response_json = response.json()
     children = response_json['data']['children']
 
     for i in range (len(children)):
-        
         data = children[i]['data']
         try:
-            post = Post(data['name'], data['title'], data['ups'], data['num_comments'], data['upvote_ratio'], data['subreddit_name_prefixed'], 'https://www.rxddit.com'+data['permalink'],None, None, None, None, None) 
+            post = Post(
+                post_id = data['name'], title = data['title'], upvotes = data['ups'], comments = data['num_comments'], upvote_ratio = data['upvote_ratio'], subreddit = data['subreddit_name_prefixed'], source = 'https://www.rxddit.com'+data['permalink'], format = None, dash = None, video_url = None, audio_url = None, image_url = None
+                ) 
             media = data['media']
             if media:
                 post.format = 'video'
@@ -59,33 +72,32 @@ def parse(subreddit, after = '', dura = 'week'):
                 post.image_url = data['url_overridden_by_dest']
         except:
             continue
-        posts.append(post)
-        print(post.id, post.source)
+        
+        existing_entry = session.query(Post).filter_by(post_id = post.post_id).first()
+
+        if existing_entry is None:
+            session.add(post)
+            session.commit()
+        print(post.post_id, post.source)
 
     after = response_json['data']['after']
     if after:
         param = '&after='+response_json['data']['after']
-        after_posts = parse(subreddit, param)
-        posts = posts + after_posts
+        parse(subreddit, param)
 
-    return posts
 
 def get_posts(subreddits, after = '', dura = 'week'):
-    posts = []
     try:
         for subreddit in subreddits:
-            temp = parse(subreddit, after = after, dura = dura)
-            posts = posts + temp
+            parse(subreddit, after = after, dura = dura)
     except KeyboardInterrupt:
         print('Exiting...')
-    return posts
+
 
 def main():
     subreddits = ['IndianDankMemes']
-    posts = get_posts(subreddits, after = '', dura = 'day')
-    print(len(posts))
-    for post in posts:
-        print(vars(post))
+    get_posts(subreddits, after = '', dura = 'week')
+
 
 if __name__ == "__main__":
     main()
