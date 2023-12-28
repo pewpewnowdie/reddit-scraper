@@ -13,16 +13,16 @@ def download_video(url):
 
 # loading video file
 try:
-    video_url = 'https://v.redd.it/makrvr18628c1/DASH_360.mp4?source=fallback'
+    video_url = 'https://v.redd.it/xl89r27wdr8c1/DASH_360.mp4?source=fallback'
     video_name = download_video(video_url)
     video_clip = VideoFileClip(video_name)
 except:
-    video_url = 'https://v.redd.it/makrvr18628c1/DASH_720.mp4?source=fallback'
+    video_url = 'https://v.redd.it/xl89r27wdr8c1/DASH_1080.mp4?source=fallback'
     video_name = download_video(video_url)
     video_clip = VideoFileClip(video_name)
 
 # loading audio file 
-audio_url = 'https://v.redd.it/makrvr18628c1/DASH_AUDIO_64.mp4'
+audio_url = 'https://v.redd.it/xl89r27wdr8c1/DASH_AUDIO_64.mp4'
 audio_name = download_video(audio_url)
 audio_clip = AudioFileClip(audio_name)
   

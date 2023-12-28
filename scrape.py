@@ -95,7 +95,7 @@ def get_posts(subreddits, after = '', dura = 'week'):
 
 
 def main():
-    subreddits = ['IndianDankMemes']
+    subreddits = ['sunraybee']
     get_posts(subreddits, after = '', dura = 'week')
 
 
