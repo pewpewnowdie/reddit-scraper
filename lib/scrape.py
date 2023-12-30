@@ -1,35 +1,6 @@
 import requests
 import time
-from sqlalchemy import create_engine, Column, Integer, String, Float
-from sqlalchemy.orm import sessionmaker, declarative_base
-
-db = 'sqlite:///posts.db'
-engine = create_engine(db, echo=False)
-
-Session = sessionmaker(bind=engine)
-session = Session()
-
-Base = declarative_base()
-
-class Post(Base):
-    __tablename__ = 'posts'
-
-    id = Column(Integer, primary_key=True)
-    post_id = Column(String, unique=True)
-    title = Column(String)
-    upvotes = Column(Integer)
-    comments = Column(Integer)
-    upvote_ratio = Column(Float)
-    subreddit = Column(String)
-    source = Column(String)
-    format = Column(String)
-    dash = Column(String)
-    video_url = Column(String)
-    audio_url = Column(String)
-    image_url = Column(String)
-
-# Base.metadata.create_all(engine)
-
+from db import Post, session
 
 def get_request(subreddit, param = '', dura = 'week'):
     url = f"https://www.reddit.com/r/{subreddit}/top.json?t={dura}{param}"
@@ -56,10 +27,13 @@ def parse(subreddit, after = '', dura = 'week'):
     for i in range (len(children)):
         data = children[i]['data']
         try:
+
             post = Post(
                 post_id = data['name'], title = data['title'], upvotes = data['ups'], comments = data['num_comments'], upvote_ratio = data['upvote_ratio'], subreddit = data['subreddit_name_prefixed'], source = 'https://www.rxddit.com'+data['permalink'], format = None, dash = None, video_url = None, audio_url = None, image_url = None
-                ) 
+                )
+             
             media = data['media']
+
             if media:
                 post.format = 'video'
                 post.dash = media['reddit_video']['dash_url']
@@ -68,8 +42,10 @@ def parse(subreddit, after = '', dura = 'week'):
             else:
                 if data['url_overridden_by_dest'][0:17] != 'https://i.redd.it':
                     continue
+
                 post.format = 'image'
                 post.image_url = data['url_overridden_by_dest']
+
         except:
             continue
         
@@ -78,11 +54,12 @@ def parse(subreddit, after = '', dura = 'week'):
         if existing_entry is None:
             session.add(post)
             session.commit()
+
         print(post.post_id, post.source)
 
     after = response_json['data']['after']
     if after:
-        param = '&after='+response_json['data']['after']
+        param = '&after=' + after
         parse(subreddit, param)
 
 
@@ -96,7 +73,7 @@ def get_posts(subreddits, after = '', dura = 'week'):
 
 def main():
     subreddits = ['sunraybee']
-    get_posts(subreddits, after = '', dura = 'week')
+    get_posts(subreddits, after = '', dura = 'day')
 
 
 if __name__ == "__main__":
