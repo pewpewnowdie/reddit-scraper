@@ -1,2 +1,2 @@
-# discord-meme-boy
+# reddit-scraper
 this bot scrapes memes from reddit.
